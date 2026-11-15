@@ -16,9 +16,14 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
-      - name: Build Jar
+      - name: Build Native Library & Jar
         working-directory: mod_src
         run: |
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          export ANDROID_NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          if [ -f "./build-native.sh" ]; then
+            chmod +x build-native.sh && ./build-native.sh
+          fi
           if [ -f "./gradlew" ]; then
             chmod +x gradlew && ./gradlew build
           else
