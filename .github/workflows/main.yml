@@ -1,0 +1,31 @@
+name: Build Mod
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Unzip source
+        run: |
+          unzip -q cpu-infinity-osus-src.zip -d mod_src
+          cd mod_src
+          if [ ! -f "build.gradle" ] && [ ! -f "build.gradle.kts" ]; then
+            mv */* . 2>/dev/null || true
+          fi
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build Jar
+        working-directory: mod_src
+        run: |
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew && ./gradlew build
+          else
+            gradle build
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: compiled-mod
+          path: mod_src/build/libs/*.jar
+          
